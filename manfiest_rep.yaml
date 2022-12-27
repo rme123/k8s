@@ -1,0 +1,36 @@
+apiVersion: apps/v1 # K8S API Version
+kind: ReplicaSet  # Object Type
+metadata:
+ name: frontend
+ labels:
+  app: spring
+  tier: fe
+spec:
+ replicas: 2
+ selector: 
+    matchLabels:
+      tier: frontend
+  template:   # here we define our PODS Specs (k8s uses go template in the background)
+    metadata:
+      labels:
+        tier: frontend
+  spec:
+   containers:
+   - name: nginx-container
+     volumeMounts:
+      - mountPath: /storage
+        name: my-volume
+     image: nginx:latest
+     ports:
+     - containerPort: 80
+   - name: springapp
+     volumeMounts:
+      - mountPath: /storage
+        name: my-volume
+     image: yanivomc/spring-music:latest
+     ports:
+     - containerPort: 8080
+   volumes:
+    - name: my-volume
+      hostPath:
+        path: /tmp/data
